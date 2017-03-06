@@ -1,0 +1,17 @@
+{
+    "name": "mnapoli/dbal-schema",
+    "description": "Schema manager for Doctrine DBAL",
+    "keywords": ["doctrine", "dbal", "schema"],
+    "license": "MIT",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "DbalSchema\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.0",
+        "doctrine/dbal": "^2.5",
+        "symfony/console": "^3.2"
+    }
+}
