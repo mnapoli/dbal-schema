@@ -20,7 +20,7 @@ composer require mnapoli/dbal-schema
 
 Define your DB schema by implementing the `SchemaDefinition` interface:
 
-```bash
+```php
 class MySchemaDefinition implements SchemaDefinition
 {
     public function define(Schema $schema)
