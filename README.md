@@ -55,7 +55,7 @@ $dbalConnection = /* your DBAL connection, see http://docs.doctrine-project.org/
 $command = new DbalSchemaCommand($dbalConnection, $schema);
 
 $application = new Silly\Application();
-$application->command('db [--force]', [$command, 'setup']);
+$application->command('db [--force]', [$command, 'update']);
 $application->command('db-purge [--force]', [$command, 'purge']);
 $application->run();
 ```
@@ -63,6 +63,6 @@ $application->run();
 If you are using the [Silly PHP-DI edition](https://github.com/mnapoli/silly/blob/master/docs/php-di.md) it's even simpler as PHP-DI can instantiate the `DbalSchemaCommand` service:
 
 ```php
-$application->command('db [--force]', [DbalSchemaCommand::class, 'setup']);
+$application->command('db [--force]', [DbalSchemaCommand::class, 'update']);
 $application->command('db-purge [--force]', [DbalSchemaCommand::class, 'purge']);
 ```

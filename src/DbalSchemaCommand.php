@@ -28,7 +28,10 @@ class DbalSchemaCommand
         $this->schemaDefinition = $schemaDefinition;
     }
 
-    public function setup(bool $force, OutputInterface $output)
+    /**
+     * Update the database schema to match the schema definition.
+     */
+    public function update(bool $force, OutputInterface $output)
     {
         $newSchema = new Schema();
         $this->schemaDefinition->define($newSchema);
@@ -55,6 +58,9 @@ class DbalSchemaCommand
         }
     }
 
+    /**
+     * Drops all the tables and re-creates them.
+     */
     public function purge(bool $force, OutputInterface $output)
     {
         $tables = $this->db->getSchemaManager()->listTableNames();
@@ -71,6 +77,6 @@ class DbalSchemaCommand
             $output->writeln('<comment>Queries were successfully run against the database</comment>');
         }
 
-        $this->setup($force, $output);
+        $this->update($force, $output);
     }
 }
