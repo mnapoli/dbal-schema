@@ -42,7 +42,7 @@ You can read the whole API available on [Doctrine's documentation](http://docs.d
 
 You can now let Doctrine update your database to match the schema you defined.
 
-#### Using Symfony Console
+#### Using Symfony fullstack
 
 You need to configure:
 
