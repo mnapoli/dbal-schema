@@ -40,13 +40,45 @@ You can read the whole API available on [Doctrine's documentation](http://docs.d
 
 ### 2. Setup the schema
 
-You can now let Doctrine update your database to match the schema you defined. This is done using the `DbalSchemaCommand`.
+You can now let Doctrine update your database to match the schema you defined.
 
 #### Using Symfony Console
 
-TODO
+You need to configure:
+
+- your `MySchemaDefinition` implementation
+- the console commands (classes defined in the `DbalSchema\Command\*` namespace)
+
+Here is an example of configuration that can go in your `config.yml`:
+
+```yaml
+services:
+    dbal_schema.definition:
+        # Replace with your actual class:
+        class: AppBundle\MySchemaDefinition
+    # The config below configures the console commands
+    dbal_schema.base_command:
+        class: DbalSchema\DbalSchemaCommand
+        arguments:
+            - '@database_connection'
+            - '@dbal_schema.definition'
+    dbal_schema.command.update_command:
+        class: DbalSchema\Command\UpdateCommand
+        arguments: ["@dbal_schema.base_command"]
+        tags:
+            - { name: console.command }
+    dbal_schema.command.purge_command:
+        class: DbalSchema\Command\PurgeCommand
+        arguments: ["@dbal_schema.base_command"]
+        tags:
+            - { name: console.command }
+```
+
+A pull request to add a proper Symfony bundle would be welcome.
 
 #### Using [Silly](https://github.com/mnapoli/silly)
+
+Using Silly you can ignore the many separate command classes and simply use the `DbalSchemaCommand` class:
 
 ```php
 $schema = new MySchemaDefinition();
@@ -60,7 +92,7 @@ $application->command('db-purge [--force]', [$command, 'purge']);
 $application->run();
 ```
 
-If you are using the [Silly PHP-DI edition](https://github.com/mnapoli/silly/blob/master/docs/php-di.md) it's even simpler as PHP-DI can instantiate the `DbalSchemaCommand` service:
+If you are using the [Silly PHP-DI edition](https://github.com/mnapoli/silly/blob/master/docs/php-di.md) it's even simpler as [PHP-DI](http://php-di.org/) can instantiate the `DbalSchemaCommand` service:
 
 ```php
 $application->command('db [--force]', [DbalSchemaCommand::class, 'update']);
