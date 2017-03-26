@@ -10,8 +10,8 @@ This package lets you achieve something similar by defining your DB schema with 
 
 ## Installation
 
-```
-composer require mnapoli/dbal-schema
+```bash
+$ composer require mnapoli/dbal-schema
 ```
 
 ## Usage
