@@ -33,6 +33,6 @@ class UpdateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->schemaCommand->update($input->hasOption('force'), $output);
+        $this->schemaCommand->update($input->getOption('force'), $output);
     }
 }
