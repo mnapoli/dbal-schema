@@ -29,7 +29,9 @@ class MySchemaDefinition implements SchemaDefinition
         $usersTable->addColumn('id', 'integer');
         $usersTable->addColumn('email', 'string');
         $usersTable->addColumn('lastLogin', 'datetime');
-        $usersTable->addColumn('score', 'float');
+        $usersTable->addColumn('score', 'float', [
+            'notnull' => false,
+        ]);
         $usersTable->setPrimaryKey(['id']);
         $usersTable->addUniqueIndex(['email']);
     }
