@@ -53,28 +53,23 @@ Here is an example of configuration that can go in your `config.yml`:
 
 ```yaml
 services:
-    dbal_schema.definition:
-        # Replace with your actual class:
-        class: AppBundle\MySchemaDefinition
-    # The config below configures the console commands
-    dbal_schema.base_command:
-        class: DbalSchema\DbalSchemaCommand
-        arguments:
-            - '@database_connection'
-            - '@dbal_schema.definition'
-    dbal_schema.command.update_command:
-        class: DbalSchema\Command\UpdateCommand
-        arguments: ["@dbal_schema.base_command"]
-        tags:
-            - { name: console.command }
-    dbal_schema.command.purge_command:
-        class: DbalSchema\Command\PurgeCommand
-        arguments: ["@dbal_schema.base_command"]
-        tags:
-            - { name: console.command }
+
+    DbalSchema\SchemaDefinition:
+        # Replace this with your class name
+        alias: App\Database\MySchemaDefinition
+    DbalSchema\DbalSchemaCommand:
+    DbalSchema\Command\UpdateCommand:
+    DbalSchema\Command\PurgeCommand:
 ```
 
-A pull request to add a proper Symfony bundle would be welcome.
+This configuration assumes your services are autowired.
+
+Once the services are registered, you can now run the commands:
+
+```bash
+bin/console dbal:schema:update
+bin/console dbal:schema:purge
+```
 
 #### Using [Silly](https://github.com/mnapoli/silly)
 
