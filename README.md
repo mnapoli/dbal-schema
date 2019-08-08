@@ -42,12 +42,7 @@ You can read the whole API available on [Doctrine's documentation](http://docs.d
 
 You can now let Doctrine update your database to match the schema you defined.
 
-#### Using Symfony fullstack
-
-You need to configure:
-
-- your `MySchemaDefinition` implementation
-- the console commands (classes defined in the `DbalSchema\Command\*` namespace)
+#### Using Symfony
 
 Here is an example of configuration that can go in your `config.yml`:
 
@@ -57,6 +52,7 @@ services:
     DbalSchema\SchemaDefinition:
         # Replace this with your class name
         alias: App\Database\MySchemaDefinition
+    # Register the commands:
     DbalSchema\DbalSchemaCommand:
     DbalSchema\Command\UpdateCommand:
     DbalSchema\Command\PurgeCommand:
