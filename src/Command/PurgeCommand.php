@@ -34,5 +34,7 @@ class PurgeCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->schemaCommand->purge($input->getOption('force'), $output);
+        
+        return 0;
     }
 }
