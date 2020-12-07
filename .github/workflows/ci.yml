@@ -1,0 +1,34 @@
+name: CI
+
+on:
+    push:
+        branches: ['master']
+    pull_request:
+        branches: ['*']
+
+jobs:
+
+    tests:
+        name: Tests - PHP ${{ matrix.php }} ${{ matrix.dependency-version }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        strategy:
+            matrix:
+                php: [ '7.4', '8.0' ]
+                dependency-version: [ '' ]
+                include:
+                    -   php: '7.4'
+                        dependency-version: '--prefer-lowest'
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v2
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    tools: composer:v2
+                    coverage: none
+            -   name: Install PHP dependencies
+                run: composer update ${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-progress --no-suggest
+            -   name: PHPUnit
+                run: vendor/bin/phpunit

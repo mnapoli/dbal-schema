@@ -1,5 +1,4 @@
-<?php
-declare(strict_types = 1);
+<?php declare(strict_types = 1);
 
 namespace DbalSchema;
 
@@ -9,6 +8,8 @@ interface SchemaDefinition
 {
     /**
      * Define a schema by configuring the provided Schema instance.
+     *
+     * @return void
      */
     public function define(Schema $schema);
 }

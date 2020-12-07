@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 use DbalSchema\DbalSchemaCommand;
 use DbalSchema\SchemaDefinition;
@@ -13,17 +12,10 @@ use Symfony\Component\Console\Output\NullOutput;
 
 class DbalSchemaCommandTest extends TestCase
 {
-    /**
-     * @var Connection
-     */
-    private $db;
+    private Connection $db;
+    private ?AbstractSchemaManager $schemaManager;
 
-    /**
-     * @var AbstractSchemaManager
-     */
-    private $schemaManager;
-
-    public function setUp()
+    public function setUp(): void
     {
         $this->db = DriverManager::getConnection([
             'url' => 'sqlite:///:memory:',
@@ -31,10 +23,12 @@ class DbalSchemaCommandTest extends TestCase
         $this->schemaManager = $this->db->getSchemaManager();
     }
 
-    public function test_update_without_force_flag()
+    public function test update without force flag(): void
     {
         $schema = new class implements SchemaDefinition {
-            public function define(Schema $schema) {} // no tables
+            public function define(Schema $schema): void
+            {
+            } // no tables
         };
 
         $this->createRandomTable();
@@ -46,10 +40,12 @@ class DbalSchemaCommandTest extends TestCase
         self::assertNotEmpty($this->schemaManager->listTables(), 'The random table was NOT deleted');
     }
 
-    public function test_update_removes_extra_tables()
+    public function test update removes extra tables(): void
     {
         $schema = new class implements SchemaDefinition {
-            public function define(Schema $schema) {} // no tables
+            public function define(Schema $schema): void
+            {
+            } // no tables
         };
 
         $this->createRandomTable();
@@ -61,10 +57,10 @@ class DbalSchemaCommandTest extends TestCase
         self::assertEmpty($this->schemaManager->listTables(), 'The random table was deleted');
     }
 
-    public function test_update_creates_defined_tables()
+    public function test update creates defined tables(): void
     {
         $schema = new class implements SchemaDefinition {
-            public function define(Schema $schema)
+            public function define(Schema $schema): void
             {
                 $table = $schema->createTable('test');
                 $table->addColumn('id', 'integer');
@@ -81,10 +77,10 @@ class DbalSchemaCommandTest extends TestCase
         self::assertEquals('test', $tables[0]->getName());
     }
 
-    public function test_purge_empties_tables_and_updates_the_schema()
+    public function test_purge_empties_tables_and_updates_the_schema(): void
     {
         $schema = new class implements SchemaDefinition {
-            public function define(Schema $schema)
+            public function define(Schema $schema): void
             {
                 $table = $schema->createTable('test');
                 $table->addColumn('id', 'integer');
@@ -107,10 +103,10 @@ class DbalSchemaCommandTest extends TestCase
         self::assertEmpty($this->db->fetchAll('SELECT * FROM test'), 'The table is empty');
     }
 
-    public function test_purge_requires_the_force_flag()
+    public function test_purge_requires_the_force_flag(): void
     {
         $schema = new class implements SchemaDefinition {
-            public function define(Schema $schema)
+            public function define(Schema $schema): void
             {
                 $table = $schema->createTable('test');
                 $table->addColumn('id', 'integer');
@@ -133,7 +129,7 @@ class DbalSchemaCommandTest extends TestCase
         self::assertCount(1, $this->db->fetchAll('SELECT * FROM test'), 'The table is NOT empty');
     }
 
-    private function createRandomTable()
+    private function createRandomTable(): void
     {
         $createTable = new Table('foo');
         $createTable->addColumn('id', 'integer');

@@ -1,5 +1,4 @@
-<?php
-declare(strict_types = 1);
+<?php declare(strict_types = 1);
 
 namespace DbalSchema;
 
@@ -12,15 +11,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class DbalSchemaCommand
 {
-    /**
-     * @var Connection
-     */
-    private $db;
-
-    /**
-     * @var SchemaDefinition
-     */
-    private $schemaDefinition;
+    private Connection $db;
+    private SchemaDefinition $schemaDefinition;
 
     public function __construct(Connection $db, SchemaDefinition $schemaDefinition)
     {
@@ -31,7 +23,7 @@ class DbalSchemaCommand
     /**
      * Update the database schema to match the schema definition.
      */
-    public function update(bool $force, OutputInterface $output)
+    public function update(bool $force, OutputInterface $output): void
     {
         $newSchema = new Schema();
         $this->schemaDefinition->define($newSchema);
@@ -61,17 +53,21 @@ class DbalSchemaCommand
     /**
      * Drops all the tables and re-creates them.
      */
-    public function purge(bool $force, OutputInterface $output)
+    public function purge(bool $force, OutputInterface $output): void
     {
         $tables = $this->db->getSchemaManager()->listTableNames();
-        $this->db->exec('SET FOREIGN_KEY_CHECKS = 0');
+        if ($this->db->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->db->exec('SET FOREIGN_KEY_CHECKS = 0');
+        }
         foreach ($tables as $table) {
             $output->writeln("<info>Dropping table $table</info>");
             if ($force) {
                 $this->db->getSchemaManager()->dropTable($table);
             }
         }
-        $this->db->exec('SET FOREIGN_KEY_CHECKS = 1');
+        if ($this->db->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->db->exec('SET FOREIGN_KEY_CHECKS = 1');
+        }
 
         if (!$force) {
             $output->writeln('<comment>No query was run, use the --force option to run the queries</comment>');

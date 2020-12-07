@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DbalSchema\Command;
 
@@ -14,10 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class UpdateCommand extends Command
 {
-    /**
-     * @var DbalSchemaCommand
-     */
-    private $schemaCommand;
+    private DbalSchemaCommand $schemaCommand;
 
     public function __construct(DbalSchemaCommand $schemaCommand)
     {
@@ -25,16 +21,16 @@ class UpdateCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('dbal:schema:update')
             ->addOption('force', 'f', InputOption::VALUE_NONE);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->schemaCommand->update($input->getOption('force'), $output);
-        
+
         return 0;
     }
 }
