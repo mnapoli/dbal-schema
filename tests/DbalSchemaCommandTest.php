@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+namespace DbalSchema\Test;
+
 use DbalSchema\DbalSchemaCommand;
 use DbalSchema\SchemaDefinition;
 use Doctrine\DBAL\Connection;

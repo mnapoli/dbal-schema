@@ -1,17 +1,15 @@
-# DBAL Schema
-
-DB schema manager for [Doctrine DBAL](http://www.doctrine-project.org/projects/dbal.html).
+A schema manager for [Doctrine DBAL](http://www.doctrine-project.org/projects/dbal.html): all the convenience of the Doctrine ORM, without using the ORM.
 
 ## Why?
 
 Doctrine ORM can automatically manage your DB schema based on your entity mapping. This feature is lost when using the DBAL instead of the ORM.
 
-This package lets you achieve something similar by defining your DB schema with PHP code. It also lets you manage your database using a Symfony Console command similar to Symfony's native `doctrine:schema:update` command.
+This package lets you achieve something similar by defining your DB schema with PHP code. It also lets you manage your database using a Symfony Console command similar to Symfony's native `doctrine:schema:update` command, as well as DB migrations.
 
 ## Installation
 
 ```bash
-$ composer require mnapoli/dbal-schema
+composer require mnapoli/dbal-schema
 ```
 
 ## Usage
@@ -21,7 +19,7 @@ $ composer require mnapoli/dbal-schema
 Define your DB schema by implementing the `SchemaDefinition` interface:
 
 ```php
-class MySchemaDefinition implements SchemaDefinition
+class MySchemaDefinition implements \DbalSchema\SchemaDefinition
 {
     public function define(Schema $schema)
     {
@@ -40,13 +38,13 @@ class MySchemaDefinition implements SchemaDefinition
 
 You can read the whole API available on [Doctrine's documentation](http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/schema-representation.html).
 
-### 2. Setup the schema
+### 2. Set up the schema
 
-You can now let Doctrine update your database to match the schema you defined.
+Doctrine can now generate/update your database based on your schema.
 
 #### Using Symfony
 
-Here is an example of configuration that can go in your `config.yml`:
+Here is an example of configuration that can go in your `config/services.yml`:
 
 ```yaml
 services:
@@ -54,6 +52,7 @@ services:
     DbalSchema\SchemaDefinition:
         # Replace this with your class name
         alias: App\Database\MySchemaDefinition
+    DbalSchema\DbalSchemaProvider:
     # Register the commands:
     DbalSchema\DbalSchemaCommand:
     DbalSchema\Command\UpdateCommand:
@@ -91,3 +90,35 @@ If you are using the [Silly PHP-DI edition](https://github.com/mnapoli/silly/blo
 $application->command('db [--force]', [DbalSchemaCommand::class, 'update']);
 $application->command('db-purge [--force]', [DbalSchemaCommand::class, 'purge']);
 ```
+
+### 3. Optional: database migrations
+
+If you prefer using database migrations instead of running `bin/console dbal:schema:update`, DBAL Schema integrates with Doctrine Migrations.
+
+To set it up, we need the `setService()` method call to happen like in the example below:
+
+```php
+use Doctrine\Migrations\Provider\SchemaProvider;
+use DbalSchema\DbalSchemaProvider;
+
+$doctrineMigrationDependencyFactory = DependencyFactory::fromConnection(...);
+
+$doctrineMigrationDependencyFactory->setService(SchemaProvider::class, new DbalSchemaProvider(new MySchemaDefinition()));
+```
+
+In Symfony, it can be done by installing the [DoctrineMigrationsBundle](https://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html) and editing `config/packages/doctrine_migrations.yaml`:
+
+```yml
+doctrine_migrations:
+    # ...
+    services:
+        Doctrine\Migrations\Provider\SchemaProvider: DbalSchema\DbalSchemaProvider
+```
+
+Now, you can run:
+
+```bash
+bin/console doctrine:migrations:diff
+```
+
+to generate migrations based on your DBAL schema.
