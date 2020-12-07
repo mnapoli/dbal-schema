@@ -29,6 +29,6 @@ jobs:
                     tools: composer:v2
                     coverage: none
             -   name: Install PHP dependencies
-                run: composer update ${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-progress --no-suggest
+                run: composer update ${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-progress --no-suggest --ignore-platform-reqs
             -   name: PHPUnit
                 run: vendor/bin/phpunit
