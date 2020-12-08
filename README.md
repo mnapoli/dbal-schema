@@ -98,6 +98,7 @@ If you prefer using database migrations instead of running `bin/console dbal:sch
 To set it up, we need the `setService()` method call to happen like in the example below:
 
 ```php
+use Doctrine\Migrations\DependencyFactory;
 use Doctrine\Migrations\Provider\SchemaProvider;
 use DbalSchema\DbalSchemaProvider;
 
