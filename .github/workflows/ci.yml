@@ -14,10 +14,10 @@ jobs:
         timeout-minutes: 15
         strategy:
             matrix:
-                php: [ '7.4', '8.0' ]
+                php: [ '8.0', '8.1' ]
                 dependency-version: [ '' ]
                 include:
-                    -   php: '7.4'
+                    -   php: '8.0'
                         dependency-version: '--prefer-lowest'
         steps:
             -   name: Checkout
@@ -29,6 +29,6 @@ jobs:
                     tools: composer:v2
                     coverage: none
             -   name: Install PHP dependencies
-                run: composer update ${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-progress --no-suggest --ignore-platform-reqs
+                run: composer update ${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-progress --ignore-platform-req=ext-pdo
             -   name: PHPUnit
                 run: vendor/bin/phpunit
