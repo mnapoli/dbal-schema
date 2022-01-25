@@ -102,7 +102,7 @@ class DbalSchemaCommandTest extends TestCase
 
         $command->purge(true, new NullOutput);
 
-        self::assertEmpty($this->db->fetchAll('SELECT * FROM test'), 'The table is empty');
+        self::assertEmpty($this->db->fetchAllAssociative('SELECT * FROM test'), 'The table is empty');
     }
 
     public function test_purge_requires_the_force_flag(): void
@@ -128,7 +128,7 @@ class DbalSchemaCommandTest extends TestCase
 
         $command->purge(false, new NullOutput);
 
-        self::assertCount(1, $this->db->fetchAll('SELECT * FROM test'), 'The table is NOT empty');
+        self::assertCount(1, $this->db->fetchAllAssociative('SELECT * FROM test'), 'The table is NOT empty');
     }
 
     private function createRandomTable(): void
