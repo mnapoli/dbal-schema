@@ -23,7 +23,7 @@ class DbalSchemaCommand
     /**
      * Update the database schema to match the schema definition.
      */
-    public function update(bool $force, OutputInterface $output): void
+    public function update(bool $force, OutputInterface $output, bool $noTransaction = false): void
     {
         $newSchema = new Schema();
         $this->schemaDefinition->define($newSchema);
@@ -31,7 +31,7 @@ class DbalSchemaCommand
 
         $migrationQueries = $currentSchema->getMigrateToSql($newSchema, $this->db->getDatabasePlatform());
 
-        $this->db->transactional(function () use ($migrationQueries, $force, $output) {
+        $migrationsRun = function () use ($migrationQueries, $force, $output) {
             foreach ($migrationQueries as $query) {
                 $output->writeln(sprintf('Running <info>%s</info>', $query));
                 if ($force) {
@@ -41,7 +41,13 @@ class DbalSchemaCommand
             if (empty($migrationQueries)) {
                 $output->writeln('<info>The database is up to date</info>');
             }
-        });
+        };
+
+        if (false === $noTransaction) {
+            $this->db->transactional($migrationsRun);
+        } else {
+            $migrationsRun();
+        }
 
         if (!$force) {
             $output->writeln('<comment>No query was run, use the --force option to run the queries</comment>');
