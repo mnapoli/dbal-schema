@@ -25,7 +25,7 @@ class UpdateCommand extends Command
     {
         $this->setName('dbal:schema:update')
             ->addOption('force', 'f', InputOption::VALUE_NONE)
-            ->addOption('no-transactions', 'n', InputOption::VALUE_NONE);
+            ->addOption('no-transactions', 't', InputOption::VALUE_NONE);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
