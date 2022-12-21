@@ -25,7 +25,7 @@ class UpdateCommand extends Command
     {
         $this->setName('dbal:schema:update')
             ->addOption('force', 'f', InputOption::VALUE_NONE)
-            ->addOption('no-transactions', 't', InputOption::VALUE_NONE);
+            ->addOption('use-transaction', 't', InputOption::VALUE_NONE);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -33,7 +33,7 @@ class UpdateCommand extends Command
         $this->schemaCommand->update(
             $input->getOption('force'),
             $output,
-            $input->getOption('no-transactions'),
+            $input->getOption('use-transaction'),
         );
 
         return 0;

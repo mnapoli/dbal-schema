@@ -23,7 +23,7 @@ class DbalSchemaCommand
     /**
      * Update the database schema to match the schema definition.
      */
-    public function update(bool $force, OutputInterface $output, bool $noTransaction = false): void
+    public function update(bool $force, OutputInterface $output, bool $withTransaction = false): void
     {
         $newSchema = new Schema();
         $this->schemaDefinition->define($newSchema);
@@ -43,7 +43,7 @@ class DbalSchemaCommand
             }
         };
 
-        if (false === $noTransaction) {
+        if (true === $withTransaction) {
             $this->db->transactional($migrationsRun);
         } else {
             $migrationsRun();
