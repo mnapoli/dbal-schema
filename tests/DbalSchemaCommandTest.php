@@ -42,6 +42,23 @@ class DbalSchemaCommandTest extends TestCase
         self::assertNotEmpty($this->schemaManager->listTables(), 'The random table was NOT deleted');
     }
 
+    public function test update without force flag and transaction(): void
+    {
+        $schema = new class implements SchemaDefinition {
+            public function define(Schema $schema): void
+            {
+            } // no tables
+        };
+
+        $this->createRandomTable();
+        self::assertNotEmpty($this->schemaManager->listTables(), 'A random table exist');
+
+        $command = new DbalSchemaCommand($this->db, $schema);
+        $command->update(false, new NullOutput, true);
+
+        self::assertNotEmpty($this->schemaManager->listTables(), 'The random table was NOT deleted');
+    }
+
     public function test update removes extra tables(): void
     {
         $schema = new class implements SchemaDefinition {
@@ -79,6 +96,26 @@ class DbalSchemaCommandTest extends TestCase
         self::assertEquals('test', $tables[0]->getName());
     }
 
+    public function test update creates defined tables without transactions(): void
+    {
+        $schema = new class implements SchemaDefinition {
+            public function define(Schema $schema): void
+            {
+                $table = $schema->createTable('test');
+                $table->addColumn('id', 'integer');
+                $table->addColumn('email', 'string');
+                $table->setPrimaryKey(['id']);
+            }
+        };
+
+        $command = new DbalSchemaCommand($this->db, $schema);
+        $command->update(true, new NullOutput, true);
+
+        $tables = $this->schemaManager->listTables();
+        self::assertCount(1, $tables);
+        self::assertEquals('test', $tables[0]->getName());
+    }
+
     public function test_purge_empties_tables_and_updates_the_schema(): void
     {
         $schema = new class implements SchemaDefinition {
@@ -101,6 +138,32 @@ class DbalSchemaCommandTest extends TestCase
         ]);
 
         $command->purge(true, new NullOutput);
+
+        self::assertEmpty($this->db->fetchAllAssociative('SELECT * FROM test'), 'The table is empty');
+    }
+
+    public function test_purge_empties_tables_and_updates_the_schema_without_transactions(): void
+    {
+        $schema = new class implements SchemaDefinition {
+            public function define(Schema $schema): void
+            {
+                $table = $schema->createTable('test');
+                $table->addColumn('id', 'integer');
+                $table->addColumn('email', 'string');
+                $table->setPrimaryKey(['id']);
+            }
+        };
+        $command = new DbalSchemaCommand($this->db, $schema);
+
+        // Create the schema
+        $command->update(true, new NullOutput);
+        // Insert a row
+        $this->db->insert('test', [
+            'id' => 123,
+            'email' => 'foo@bar.com',
+        ]);
+
+        $command->purge(true, new NullOutput, true);
 
         self::assertEmpty($this->db->fetchAllAssociative('SELECT * FROM test'), 'The table is empty');
     }

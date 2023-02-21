@@ -24,12 +24,17 @@ class UpdateCommand extends Command
     protected function configure(): void
     {
         $this->setName('dbal:schema:update')
-            ->addOption('force', 'f', InputOption::VALUE_NONE);
+            ->addOption('force', 'f', InputOption::VALUE_NONE)
+            ->addOption('use-transaction', 't', InputOption::VALUE_NONE);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->schemaCommand->update($input->getOption('force'), $output);
+        $this->schemaCommand->update(
+            $input->getOption('force'),
+            $output,
+            $input->getOption('use-transaction'),
+        );
 
         return 0;
     }
